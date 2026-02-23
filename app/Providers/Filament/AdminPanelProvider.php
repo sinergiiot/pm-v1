@@ -156,7 +156,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
-                fn () => Blade::render('<div class="text-center mt-4 text-xs text-gray-500"><a href="{{ route(\'privacy-policy\') }}" class="underline hover:text-amber-600">Privacy Policy</a></div>')
+                fn () => Blade::render('<div class="text-center mt-4 text-xs text-gray-500"><a href="{{ url("/privacy-policy") }}" class="underline hover:text-amber-600">Privacy Policy</a></div>')
             )
             ->viteTheme('resources/css/filament/admin/theme.css');
     }
