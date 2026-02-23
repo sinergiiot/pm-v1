@@ -3,10 +3,8 @@ FROM php:8.3-fpm-alpine AS composer-builder
 WORKDIR /app
 RUN apk add --no-cache git unzip
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-scripts --no-autoloader --ignore-platform-reqs
 COPY . .
-RUN composer dump-autoload --no-dev --optimize
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # Stage 2: Build Assets
 FROM node:20-alpine AS assets-builder
