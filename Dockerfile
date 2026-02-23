@@ -28,6 +28,7 @@ RUN apk add --no-cache \
     icu-dev \
     oniguruma-dev \
     postgresql-dev \
+    sqlite-dev \
     mysql-client \
     zip \
     unzip \
@@ -36,7 +37,7 @@ RUN apk add --no-cache \
 
 # Install PHP Extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd pdo_mysql mbstring zip exif pcntl bcmath intl
+    && docker-php-ext-install -j$(nproc) gd pdo_mysql pdo_sqlite mbstring zip exif pcntl bcmath intl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -59,11 +60,15 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
 # Optimization Commands
-RUN php artisan package:discover --ansi
-RUN php artisan filament:upgrade
-RUN php artisan filament:optimize
-RUN php artisan view:cache
-RUN php artisan event:cache
+# We use a dummy SQLite connection to allow booting the app during build
+RUN export APP_KEY=base64:$(php -r 'echo base64_encode(random_bytes(32));') && \
+    export DB_CONNECTION=sqlite && \
+    export DB_DATABASE=:memory: && \
+    php artisan package:discover --ansi && \
+    php artisan filament:upgrade && \
+    php artisan filament:optimize && \
+    php artisan view:cache && \
+    php artisan event:cache
 
 EXPOSE 80
 
