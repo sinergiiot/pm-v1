@@ -58,18 +58,10 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Copy Nginx & Supervisor Configs
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
-
-# Optimization Commands
-# We use a dummy SQLite connection to allow booting the app during build
-RUN export APP_KEY=base64:$(php -r 'echo base64_encode(random_bytes(32));') && \
-    export DB_CONNECTION=sqlite && \
-    export DB_DATABASE=:memory: && \
-    php artisan package:discover --ansi && \
-    php artisan filament:upgrade && \
-    php artisan filament:optimize && \
-    php artisan view:cache && \
-    php artisan event:cache
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 EXPOSE 80
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+ENTRYPOINT ["entrypoint.sh"]
+
