@@ -6,6 +6,11 @@ echo "Starting Deployment..."
 # 1. Maintenance Mode
 php artisan down || true
 
+# 2. Fix Permissions
+# Ensure storage and cache are writable by the web server
+sudo chown -R www-data:www-data .
+sudo chmod -R 775 storage bootstrap/cache
+
 # 2. Update Code
 # git pull origin main (Optional: if run from inside the script)
 
@@ -20,7 +25,7 @@ npm install
 npm run build
 
 # 6. Apply Optimizations & Sync Permissions
-php artisan shield:generate --all --no-interaction
+php artisan shield:generate --all --panel=admin --option=policies_and_permissions --no-interaction
 php artisan optimize      # Caches config and routes
 php artisan view:cache
 php artisan event:cache
