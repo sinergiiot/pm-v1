@@ -1,0 +1,12 @@
+@import '../../../../vendor/resma/filament-awin-theme/resources/css/theme.css';
+@source '../../../../vendor/relaticle/flowforge/resources/views/**/*.blade.php';
+
+/* Kanban columns: distinct background and border so they don't blend with the page */
+@layer components {
+  .flowforge-column {
+    @apply bg-white dark:bg-gray-800 shadow-md ring-1 ring-gray-200 dark:ring-gray-600 dark:border-gray-600;
+  }
+  .flowforge-column-header {
+    @apply bg-gray-50 dark:bg-gray-700/80 border-gray-200 dark:border-gray-600;
+  }
+}
