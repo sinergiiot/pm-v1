@@ -1,10 +1,8 @@
 # Stage 1: PHP Dependencies
-FROM php:8.3-fpm-alpine AS composer-builder
+FROM composer:latest AS composer-builder
 WORKDIR /app
-RUN apk add --no-cache git unzip
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
-RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 
 # Stage 2: Build Assets
 FROM node:20-alpine AS assets-builder
@@ -61,6 +59,8 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
 # Optimization Commands
+RUN php artisan package:discover --ansi
+RUN php artisan filament:upgrade
 RUN php artisan filament:optimize
 RUN php artisan view:cache
 RUN php artisan event:cache
