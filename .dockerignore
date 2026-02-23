@@ -6,6 +6,5 @@ storage/*.key
 .env
 .github
 *.log
-docker
 docs
 tests
