@@ -19,7 +19,8 @@ php artisan migrate --force
 npm install
 npm run build
 
-# 6. Apply Optimizations
+# 6. Apply Optimizations & Sync Permissions
+php artisan shield:generate --all --no-interaction
 php artisan optimize      # Caches config and routes
 php artisan view:cache
 php artisan event:cache

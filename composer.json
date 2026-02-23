@@ -58,6 +58,7 @@
             "@php artisan test"
         ],
         "prod-optimize": [
+            "@php artisan shield:generate --all --no-interaction",
             "@php artisan optimize",
             "@php artisan view:cache",
             "@php artisan event:cache",
