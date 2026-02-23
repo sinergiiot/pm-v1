@@ -153,7 +153,11 @@ class AdminPanelProvider extends PanelProvider
                     })
                     ->userModelClass(\App\Models\User::class)
                     ->socialiteUserModelClass(\App\Models\SocialiteUser::class)
-                        ])
+            ])
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn () => Blade::render('<div class="text-center mt-4 text-xs text-gray-500"><a href="{{ route(\'privacy-policy\') }}" class="underline hover:text-amber-600">Privacy Policy</a></div>')
+            )
             ->viteTheme('resources/css/filament/admin/theme.css');
     }
 }

@@ -11,6 +11,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy-policy');
+
 Route::get('/share/{token}', [ProjectShareController::class, 'show'])->name('share.project');
 
 Route::middleware(['web', 'auth'])->prefix('admin')->group(function () {

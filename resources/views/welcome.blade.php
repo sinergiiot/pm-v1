@@ -273,5 +273,9 @@
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+
+        <footer class="w-full lg:max-w-4xl max-w-[335px] py-8 text-center text-sm text-[#706f6c] dark:text-[#A1A09A]">
+            <a href="{{ route('privacy-policy') }}" class="hover:text-[#1b1b18] dark:hover:text-[#EDEDEC] transition-colors">Privacy Policy</a>
+        </footer>
     </body>
 </html>
