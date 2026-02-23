@@ -1,6 +1,8 @@
 # Stage 1: PHP Dependencies
-FROM composer:latest AS composer-builder
+FROM php:8.4-fpm-alpine AS composer-builder
 WORKDIR /app
+RUN apk add --no-cache git unzip
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts
 
@@ -13,8 +15,8 @@ COPY . .
 COPY --from=composer-builder /app/vendor ./vendor
 RUN npm run build
 
-# Stage 2: PHP Application
-FROM php:8.3-fpm-alpine
+# Stage 3: PHP Application
+FROM php:8.4-fpm-alpine
 
 # Install System Dependencies
 RUN apk add --no-cache \
