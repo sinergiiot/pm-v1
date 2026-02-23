@@ -1,9 +1,21 @@
-# Stage 1: Build Assets
+# Stage 1: PHP Dependencies
+FROM php:8.3-fpm-alpine AS composer-builder
+WORKDIR /app
+RUN apk add --no-cache git unzip
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader --ignore-platform-reqs
+COPY . .
+RUN composer dump-autoload --no-dev --optimize
+
+# Stage 2: Build Assets
 FROM node:20-alpine AS assets-builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
-COPY . .
+COPY --from=composer-builder /app/vendor ./vendor
+COPY --from=composer-builder /app/resources ./resources
+COPY --from=composer-builder /app/vite.config.js ./
 RUN npm run build
 
 # Stage 2: PHP Application
@@ -39,12 +51,9 @@ WORKDIR /var/www/html
 # Copy Application Code
 COPY . .
 
-# Copy Built Assets
+# Copy vendor and assets from builders
+COPY --from=composer-builder /app/vendor ./vendor
 COPY --from=assets-builder /app/public/build ./public/build
-
-# Install Production Dependencies
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader
 
 # Set Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
