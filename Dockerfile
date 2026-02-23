@@ -9,9 +9,8 @@ FROM node:20-alpine AS assets-builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
+COPY . .
 COPY --from=composer-builder /app/vendor ./vendor
-COPY --from=composer-builder /app/resources ./resources
-COPY --from=composer-builder /app/vite.config.js ./
 RUN npm run build
 
 # Stage 2: PHP Application
