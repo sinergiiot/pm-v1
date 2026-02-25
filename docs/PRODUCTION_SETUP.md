@@ -4,7 +4,7 @@ Dokumen ini berisi langkah-langkah untuk melakukan optimasi dan setup `filament-
 
 ## 1. Persyaratan Sistem
 Pastikan VPS Anda memiliki komponen berikut:
-- **PHP 8.2+** (Direkomendasikan 8.3/8.4)
+- **PHP 8.4+** (Direkomendasikan PHP 8.4)
 - **Ekstensi PHP**: `ctype`, `curl`, `dom`, `fileinfo`, `filter`, `gd`, `hash`, `iconv`, `intl`, `json`, `libxml`, `mbstring`, `openssl`, `pcre`, `pdo_mysql`, `session`, `tokenizer`, `xml`, `xmlwriter`, `zip`
 - **Database**: MySQL 8.0+ atau MariaDB 10.4+
 - **Web Server**: Nginx (direkomendasikan) atau Apache
@@ -90,9 +90,9 @@ sudo apt-get install supervisor
 
 Buat file konfigurasi `/etc/supervisor/conf.d/filament-pm-worker.conf`:
 ```ini
-[program:filament-pm-worker]
+[program:project-management-v1-worker]
 process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/filament-pm/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/project-management-v1/artisan queue:work database --sleep=3 --tries=3 --max-time=3600
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -100,7 +100,7 @@ killasgroup=true
 user=www-data
 numprocs=2
 redirect_stderr=true
-stdout_logfile=/var/www/filament-pm/storage/logs/worker.log
+stdout_logfile=/var/www/project-management-v1/storage/logs/worker.log
 stopwaitsecs=3600
 ```
 
@@ -108,7 +108,7 @@ Update dan start:
 ```bash
 sudo supervisorctl reread
 sudo supervisorctl update
-sudo supervisorctl start filament-pm-worker:*
+sudo supervisorctl start project-management-v1-worker:*
 ```
 
 ---
@@ -122,7 +122,7 @@ crontab -e
 
 Tambahkan baris berikut:
 ```bash
-* * * * * cd /var/www/filament-pm && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/project-management-v1 && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ---
@@ -131,9 +131,9 @@ Tambahkan baris berikut:
 Pastikan folder `storage` dan `bootstrap/cache` dapat ditulis oleh web server:
 
 ```bash
-sudo chown -R www-data:www-data /var/www/filament-pm
-sudo chmod -R 775 /var/www/filament-pm/storage
-sudo chmod -R 775 /var/www/filament-pm/bootstrap/cache
+sudo chown -R www-data:www-data /var/www/project-management-v1
+sudo chmod -R 775 /var/www/project-management-v1/storage
+sudo chmod -R 775 /var/www/project-management-v1/bootstrap/cache
 ```
 
 🚀 Selesai! Aplikasi Anda sekarang sudah teroptimasi untuk production di VPS.
