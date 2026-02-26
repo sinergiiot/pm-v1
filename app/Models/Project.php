@@ -71,7 +71,7 @@ class Project extends Model
             return false;
         }
 
-        return $this->due_date->isPast();
+        return \Illuminate\Support\Carbon::parse($this->due_date)->isPast();
     }
 
     public function remainingDays(): int
@@ -100,6 +100,31 @@ class Project extends Model
             return 'Due soon';
         }
         return 'On Track';
+    }
+
+    public function getTaskStats(): array
+    {
+        $total = $this->tasks()->count();
+        if ($total === 0) {
+            return [
+                'total' => 0,
+                'completed' => 0,
+                'pending' => 0,
+                'progress' => 0,
+            ];
+        }
+
+        $completed = $this->tasks()
+            ->whereHas('taskStatus', function ($q) {
+                $q->whereRaw('task_statuses.order = (select max(`order`) from task_statuses as ts where ts.project_id = ?)', [$this->id]);
+            })->count();
+
+        return [
+            'total' => $total,
+            'completed' => $completed,
+            'pending' => $total - $completed,
+            'progress' => round(($completed / $total) * 100),
+        ];
     }
 
     public function generateShareToken(): string
@@ -166,6 +191,11 @@ class Project extends Model
 
     public function transactions(): HasMany
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany($this->transactions_model ?? Transaction::class);
+    }
+
+    public function comments(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(TaskComment::class, Task::class);
     }
 }
